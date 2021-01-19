@@ -11,10 +11,14 @@ switch ($request_method) {
             getProducts();
         }
         break;
-        case 'PUT':
-            $id = intval($_GET['id']);
-            updateProduct($id);
-            break;
+    case 'PUT':
+        $id = intval($_GET['id']);
+        updateProduct($id);
+        break;
+
+    case 'POST':
+        addProduct();
+        break;
     default:
         echo "Par defaut : ";
         getProducts();
@@ -54,11 +58,11 @@ function updateProduct($id)
     $name = $_PUT['name'];
     $description = $_PUT['description'];
     $price = $_PUT['price'];
-    $category = $_PUT['category'];
+    // $category = $_PUT['category'];
     $created = 'NULL';
     $modified = date('Y-m-d H:i:s');
     $query = "UPDATE produit SET name = '" . $name . "', description = '" . $description . "', price = '" . $price . "', 
-    category = '" . $category . "', modified = '" . $modified . "', WHERE id='" . $id . "'";
+    modified = '" . $modified . "' WHERE id=" . $id;
 
     if (mysqli_query($conn, $query)) {
         $response = array(
@@ -66,9 +70,38 @@ function updateProduct($id)
             'status_message' => 'Produit mis a jour avec succes.'
         );
     } else {
-        $reponse = array(
+        $response = array(
             'status' => 1,
             'status_message' => 'Echec de la mise à jour de produit' . mysqli_error($conn)
+        );
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response, JSON_PRETTY_PRINT);
+}
+
+function addProduct()
+{
+    global $conn;
+    $_POST = array();
+    parse_str(file_get_contents('php://input'), $_POST);
+    $name = $_POST['name'];
+    $description = $_POST['description'];
+    $price = $_POST['price'];
+    $category = $_POST['category_id'];
+    $created = date('Y-m-d H:i:s');
+
+    $query = "INSERT INTO produit (name, description, price, created, category_id) VALUES = ('" . $name . "',  = '" . $description . "',  = '" . $price . "', 
+     = '" . $created . "',  = '" . $category . "') ";
+
+    if (mysqli_query($conn, $query)) {
+        $response = array(
+            'status' => 1,
+            'status_message' => 'Produit ajouté avec success.'
+        );
+    } else {
+        $response = array(
+            'status' => 1,
+            'status_message' => 'Echec de l\'ajout du produit' . mysqli_error($conn)
         );
     }
     header('Content-Type: application/json');
