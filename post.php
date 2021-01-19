@@ -1,7 +1,7 @@
 <?php
 
-$url = 'http://localhost/testREST/produits';
-$data = array ('name' => 'PEC', 'description' => 'Pencil 2H', 'price' =>'2.25', 'category_id' => '9');
+$url = 'http://localhost/Clay/testREST/produits';
+$data = array ('name' => 'PEC', 'description' => 'Pencil 2H', 'price' =>'2.25', 'category' => '9');
 
 $options = array(
     'http' => array(
@@ -11,7 +11,7 @@ $options = array(
     )
     );
     $context = stream_context_create ($options);
-    $result = file_get_contents($url, true, $context);
+    $result = file_get_contents($url, false, $context);
 if ($result === FALSE) {}
 var_dump($result);
 

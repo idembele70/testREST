@@ -15,13 +15,12 @@ switch ($request_method) {
         $id = intval($_GET['id']);
         updateProduct($id);
         break;
-
     case 'POST':
         addProduct();
         break;
-    default:
-        echo "Par defaut : ";
-        getProducts();
+    case 'DELETE':
+        $id = intval($_GET['id']);
+        deleteProduct($id);
         break;
 }
 function getProducts()
@@ -82,16 +81,16 @@ function updateProduct($id)
 function addProduct()
 {
     global $conn;
-    $_POST = array();
-    parse_str(file_get_contents('php://input'), $_POST);
+    // $_POST = array();
+    // parse_str(file_get_contents('php://input'), $_POST);
     $name = $_POST['name'];
     $description = $_POST['description'];
     $price = $_POST['price'];
-    $category = $_POST['category_id'];
+    $category = $_POST['category'];
     $created = date('Y-m-d H:i:s');
-
-    $query = "INSERT INTO produit (name, description, price, created, category_id) VALUES = ('" . $name . "',  = '" . $description . "',  = '" . $price . "', 
-     = '" . $created . "',  = '" . $category . "') ";
+    $modified = date('Y-m-d H:i:s');
+    $query = "INSERT INTO produit (name, description,category_id, price, created, modified) VALUES ('" . $name . "','" . $description . "',
+   '" . $category . "', '" . $price . "','" . $created . "', '" . $modified . "') ";
 
     if (mysqli_query($conn, $query)) {
         $response = array(
@@ -102,6 +101,26 @@ function addProduct()
         $response = array(
             'status' => 1,
             'status_message' => 'Echec de l\'ajout du produit' . mysqli_error($conn)
+        );
+    }
+    header('Content-Type: application/json');
+    echo json_encode($response, JSON_PRETTY_PRINT);
+}
+
+function deleteProduct($id)
+{
+    global $conn;
+    $query = "DELETE FROM produit WHERE id=" . $id;
+
+    if (mysqli_query($conn, $query)) {
+        $response = array(
+            'status' => 1,
+            'status_message' => 'Produit a été supprimer.'
+        );
+    } else {
+        $response = array(
+            'status' => 1,
+            'status_message' => 'Echec de la suppression du produit' . mysqli_error($conn)
         );
     }
     header('Content-Type: application/json');
